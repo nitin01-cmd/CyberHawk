@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CyberHawk Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; }
+        .container { max-width: 900px; margin: auto; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: center; }
+        th { background: #333; color: white; }
+        canvas { margin-top: 20px; }
+    </style>
+</head>
+<body>
+
+    <h1>CyberHawk Honeypot Dashboard</h1>
+    
+    <div class="container">
+        <h3>Total Attacks:</h3>
+        <p><strong>Web Logins:</strong> {{ web_count }}</p>
+        <p><strong>SSH Attempts:</strong> {{ ssh_count }}</p>
+        <p><strong>Network Scans:</strong> {{ scan_count }}</p>
+        
+        <canvas id="attackChart"></canvas>
+
+        <h3>Recent Web Login Attacks</h3>
+        <table>
+            <tr><th>IP Address</th><th>Username</th><th>Password</th><th>Timestamp</th></tr>
+            {% for attack in web_attacks %}
+            <tr>
+                <td>{{ attack[0] }}</td>
+                <td>{{ attack[1] }}</td>
+                <td>{{ attack[2] }}</td>
+                <td>{{ attack[3] }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+
+        <h3>Recent SSH Brute Force Attempts</h3>
+        <table>
+            <tr><th>IP Address</th><th>Username</th><th>Password</th><th>Timestamp</th></tr>
+            {% for attack in ssh_attacks %}
+            <tr>
+                <td>{{ attack[0] }}</td>
+                <td>{{ attack[1] }}</td>
+                <td>{{ attack[2] }}</td>
+                <td>{{ attack[3] }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+
+        <h3>Recent Network Scans</h3>
+        <table>
+            <tr><th>IP Address</th><th>Timestamp</th></tr>
+            {% for attack in scan_attacks %}
+            <tr>
+                <td>{{ attack[0] }}</td>
+                <td>{{ attack[1] }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+
+    <script>
+        var ctx = document.getElementById('attackChart').getContext('2d');
+        var attackChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Web Logins', 'SSH Attempts', 'Network Scans'],
+                datasets: [{
+                    label: 'Total Attacks',
+                    data: [{{ web_count | safe }}, {{ ssh_count | safe }}, {{ scan_count | safe }}],
+                    backgroundColor: ['red', 'blue', 'green']
+                }]
+            }
+        });
+    </script>
+
+</body>
+</html>
